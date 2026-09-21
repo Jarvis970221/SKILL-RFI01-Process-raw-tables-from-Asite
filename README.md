@@ -24,6 +24,7 @@
 | `SKILL.md` | 技能定义（触发条件、流程、规则、踩坑） |
 | `scripts/build_bs_listing.py` | 整理脚本 |
 | `scripts/verify_output.py` | 校验脚本（含签名反查一致率） |
+| `references/20260920-FormListing处理流程总结.md` | 2026-09-20 实测流程、统计与已知瑕疵 |
 
 ## 用法
 

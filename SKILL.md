@@ -1,7 +1,6 @@
 ---
 name: rfi01-process-raw-tables-from-asite
-description: RFI01-Process raw tables from Asite — process an Asite "Form Listing.xlsx" export into the tidy 顧問-split workbook: filter Discipline_Code to BS, drop AR/STR ref numbers, add the Asite search column, split the multi-consultant Response text and Response_Date into per-consultant WTP/WSP/MSC columns, natural-sort by Cont_Ref_No, and apply the yellow/pink column highlight scheme. Use when the user wants to 整理/处理/拆分 an Asite Form Listing export or rebuild "YYYYMMDD-处理过Form Listing.xlsx".
-agent_created: true
+description: 'RFI01-Process raw tables from Asite — process an Asite "Form Listing.xlsx" export into the tidy 顧問-split workbook: filter Discipline_Code to BS, drop AR/STR ref numbers, add the Asite search column, split the multi-consultant Response text and Response_Date into per-consultant WTP/WSP/MSC columns, natural-sort by Cont_Ref_No, and apply the yellow/pink column highlight scheme. Use when the user wants to 整理/处理/拆分 an Asite Form Listing export or rebuild "YYYYMMDD-处理过Form Listing.xlsx".'
 ---
 
 # RFI01-Process raw tables from Asite
@@ -146,6 +145,21 @@ Response / Created_By / Response_Date / Response_Flag
 实测 **1936 个可判定段落 100% 一致**。若一致率明显低于 100%，说明切分或按位配对出错，
 不要交付，回头查 DELIM / COMP / 列索引。
 
+## 20260920 实测基线
+
+以下数字来自 `20260920-FormListing处理流程总结.md`，用于判断一次重跑是否落在预期范围内：
+
+- 源表 6137 行；筛选 `BS` 后 3338 行；剔除 AR/STR 单号后 3295 行
+- 成果为 21 列；`Asite search` 有值 3294 行，1 行为空
+- `Asite Reply` 非空：WTP 1681、WSP 2635、MSC 204；三项全空 276 行
+- 同一顾问多段回复合并 505 行；含多日期的单元格 534 个
+- 切分统计：3338 行中 3327 行可直接按 `" , "` 切分，10 行需要 DP 兜底
+- 签名反查 1936 个可判定段落，预期一致率为 100%
+
+数字因源表版本不同可能变化；应优先检查筛选条件、列索引、分隔符和校验脚本输出，不要为了追数字修改源数据。
+
+完整的本次流程记录见 [`references/20260920-FormListing处理流程总结.md`](references/20260920-FormListing处理流程总结.md)。
+
 ## 踩过的坑
 
 | 现象 | 原因 / 解法 |
@@ -163,3 +177,6 @@ Response / Created_By / Response_Date / Response_Flag
    语义上可能属于前一段
 3. CSHK（总包）的回复/日期不落任何列，被丢弃
 4. 个别行 `Cont_Ref_No` 被 Asite 误填成表单标题；排序时非 `NA[FH]` 开头的排到末尾
+
+本次 20260920 记录还确认：4 行的 Response 末段是孤立的 `refer to attached`，可能应归入前一段；
+2 行单号被误填成表单标题，另有 1 行学科段为空。这些情况保留在结果中，交付时提示人工复核。
